@@ -22,6 +22,8 @@ We publicly release all implementation details, including training code, dataset
 
 ## 📰 News
 
+[2025.10.17] We have publicly released the RealTimeNews-2025 Dataset. Researchers can now download and use it by completing [this form](https://forms.office.com/Pages/ResponsePage.aspx?id=DQSIkWdsW0yxEjajBLZtrQAAAAAAAAAAAAN__lChjjFpUQlhZT1lFUU5HNkM2VzZJR1dZRDdLQjBMRC4u).
+
 <details>
 <summary><b>📋 Previous Releases</b></summary>
 
@@ -33,7 +35,7 @@ Conventional fake news datasets often comprise news that is several years old. S
 
 ### ⬇ Download
 
-We are currently organizing RealTimeNews-2025, which will be released via links on Baidu Netdisk and Google Drive.
+This dataset can be accessed by completing the [Application to Use the RealTimeNews-2025 from EASE for Real-Time Fake News Detection](https://forms.office.com/Pages/ResponsePage.aspx?id=DQSIkWdsW0yxEjajBLZtrQAAAAAAAAAAAAN__lChjjFpUQlhZT1lFUU5HNkM2VzZJR1dZRDdLQjBMRC4u). Upon approval, it will be available for download and use.
 
 ### ✨ Dataset Examples
 
@@ -45,34 +47,26 @@ The dataset is structured as follows:
 ```
 ├── data
     ├── news
-        ├── origin.json
-        ├── entity_modifiction.json
-        └── writing_style.json
+        └── news.json
     ├── imgs
         ├── 0.png
-        ├── 1.png
+        ├── 1.jpg
         ├── 2.png
-        └── ... # {id}.png
+        └── ... # {id}.jpg/png/webp
 ```
 
-Format of `news/origin.json`:
+Format of `news/news.json`:
 ```
-{
-  ID: 1.
-  Content: Death of Slim Shady: The controversial legacy of Eminem’s peroxide-blond alter ego...
-  Published: 2024-06-01,
-  Label: real,
-  Evidence: In his new album "The Death of Slim Shady (Coup De Grâce)", Eminem examines the controversial legacy...,
-  Evidence Prediction: real,
-  Reasoning: The title uses the provocative term "Death" and frames the topic around a "controversial legacy"...,
-  Reasoning Prediction: real,
-  Sentiment: The title uses metaphorical language common in music journalism...,
-  Sentiment Prediction: real,
-  Modification Type: origin,
-  Sources: BBC,
-  Evidence Reliable: 1,
-  Reasoning Reliable: 1
-},
+  {
+    "id": 0,
+    "content": "Death of Slim Shady: The controversial legacy of Eminem's peroxide-blond alter ego",
+    "td_rationale": "The title uses the provocative term \"Death\" and frames the topic around a \"controversial legacy,\" which is emotionally charged and designed to attract attention. However, it does not employ exaggerated alarmism or overtly manipulative language, instead presenting a subjective but plausible cultural analysis.",
+    "cs_rationale": "The title uses metaphorical language common in music journalism. \"Death\" refers to artistic retirement of a persona, not physical death. This follows logical patterns where artists retire alter egos while the actual person (Eminem) continues living.",
+    "se_rationale": "In his new album \"The Death of Slim Shady (Coup De Grâce),\" Eminem examines the controversial legacy of his Slim Shady persona and announces his departure from the character. He reflects on the persona's profound impact on his career, noting that it nearly cost him his career, family, and life, and that his life has improved since Slim Shady faded away. These points are supported by sources including People, The Independent, and UMusic.",
+    "evidence_source": "none",
+    "label": "real",
+    "image": "0.jpg"
+  },
 ```
 
 ## 👨‍💻 Code
