@@ -22,7 +22,7 @@ We publicly release all implementation details, including training code, dataset
 
 ## 📰 News
 
-[2025.10.17] We have publicly released the RealTimeNews-2025 Dataset. Researchers can now download and use it by completing [this form](https://forms.office.com/Pages/ResponsePage.aspx?id=DQSIkWdsW0yxEjajBLZtrQAAAAAAAAAAAAN__lChjjFpUQlhZT1lFUU5HNkM2VzZJR1dZRDdLQjBMRC4u).
+[2025.10.17] We have publicly released the RealTimeNews-2025 Dataset. Researchers can now download and use it by completing [this form](https://forms.office.com/r/mJRTtJR2Qf).
 
 <details>
 <summary><b>📋 Previous Releases</b></summary>
@@ -35,7 +35,7 @@ Conventional fake news datasets often comprise news that is several years old. S
 
 ### ⬇ Download
 
-This dataset can be accessed by completing the [Application to Use the RealTimeNews-2025 from EASE for Real-Time Fake News Detection](https://forms.office.com/Pages/ResponsePage.aspx?id=DQSIkWdsW0yxEjajBLZtrQAAAAAAAAAAAAN__lChjjFpUQlhZT1lFUU5HNkM2VzZJR1dZRDdLQjBMRC4u). Upon approval, it will be available for download and use.
+This dataset can be accessed by completing the [Application to Use the RealTimeNews-2025 from EASE for Real-Time Fake News Detection](https://forms.office.com/r/mJRTtJR2Qf). Upon approval, it will be available for download and use.
 
 ### ✨ Dataset Examples
 
