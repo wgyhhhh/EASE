@@ -60,9 +60,9 @@ Format of `news/news.json`:
   {
     "id": 0,
     "content": "Death of Slim Shady: The controversial legacy of Eminem's peroxide-blond alter ego",
-    "td_rationale": "The title uses the provocative term \"Death\" and frames the topic around a \"controversial legacy,\" which is emotionally charged and designed to attract attention. However, it does not employ exaggerated alarmism or overtly manipulative language, instead presenting a subjective but plausible cultural analysis.",
-    "cs_rationale": "The title uses metaphorical language common in music journalism. \"Death\" refers to artistic retirement of a persona, not physical death. This follows logical patterns where artists retire alter egos while the actual person (Eminem) continues living.",
-    "se_rationale": "In his new album \"The Death of Slim Shady (Coup De Grâce),\" Eminem examines the controversial legacy of his Slim Shady persona and announces his departure from the character. He reflects on the persona's profound impact on his career, noting that it nearly cost him his career, family, and life, and that his life has improved since Slim Shady faded away. These points are supported by sources including People, The Independent, and UMusic.",
+    "sentiment": "The title uses the provocative term \"Death\" and frames the topic around a \"controversial legacy,\" which is emotionally charged and designed to attract attention. However, it does not employ exaggerated alarmism or overtly manipulative language, instead presenting a subjective but plausible cultural analysis.",
+    "reasoning": "The title uses metaphorical language common in music journalism. \"Death\" refers to artistic retirement of a persona, not physical death. This follows logical patterns where artists retire alter egos while the actual person (Eminem) continues living.",
+    "evidence": "In his new album \"The Death of Slim Shady (Coup De Grâce),\" Eminem examines the controversial legacy of his Slim Shady persona and announces his departure from the character. He reflects on the persona's profound impact on his career, noting that it nearly cost him his career, family, and life, and that his life has improved since Slim Shady faded away. These points are supported by sources including People, The Independent, and UMusic.",
     "evidence_source": "none",
     "label": "real",
     "image": "0.jpg"
