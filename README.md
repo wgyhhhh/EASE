@@ -8,17 +8,15 @@
 [![arXiv](https://img.shields.io/badge/arXiv-2510.11277-b31b1b.svg)](https://arxiv.org/abs/2510.11277)
 <img align="right" alt="ReaL" src="/assets/fake.png" width="40%">
 
-EASE is an open-source, knowledge-augmented verification system for real-time fake news. EASE introduces a sequential evaluation mechanism comprising three independent perspectives: (1) Evidence-based evaluation, which assesses evidence and incorporates it into decision-making only when the evidence is sufficiently supportive; (2) Reasoning-based evaluation, which leverages the world knowledge of large language models (LLMs) and applies them only when their reliability is adequately established; and (3) Sentiment-based fallback, which integrates sentiment cues when neither evidence nor reasoning is reliable. 
+EASE is an open-source, knowledge-augmented verification system for real-time fake news. EASE introduces a sequential evaluation mechanism comprising three independent perspectives: (1) Evidence-based evaluation, which assesses evidence and incorporates it into decision-making only when the evidence is sufficiently supportive; (2) Reasoning-based evaluation, which leverages the world knowledge of large language models (LLMs) and applies them only when their reliability is adequately established; and (3) Sentiment-based fallback, which integrates sentiment cues when neither evidence nor reasoning is reliable.
 
-We publicly release all implementation details, including training code, datasets, and infrastructure, to enable result verification and contribute to the research community.
+[Guangyu Wei*](https://isxinliu.github.io/), [Ke Han*](https://scholar.google.com/citations?user=aTZSYhwAAAAJ&hl=en), [Yueming Lyu†](https://scholar.google.com/citations?user=TxuK84wAAAAJ&hl=zh-CN), [Yu Luo](https://scholar.google.com/citations?user=Q__ApKoAAAAJ&hl=zh-CN), [Yue Jiang](https://openreview.net/profile?id=~Yue_Jiang3), [Caifeng Shan](https://scholar.google.com/citations?hl=zh-CN&user=fIXA_SsAAAAJ), [Nicu Sebe](https://scholar.google.com/citations?hl=zh-CN&user=stFCYOAAAAAJ)
 
-**EASE Highlights**
+(*Contribute equally, †Corresponding author)
 
-- ⏱️ Real-time: EASE leverages a multi-perspective approach to fake news detection by integrating real-time evidence retrieval from the web, logical reasoning for factuality assessment, and sentiment analysis of textual characteristics.
+**<font color='red'>We publicly release all implementation details, including training code, datasets, and infrastructure, to enable result verification and contribute to the research community.</font>**
 
-- 🛡️ Robustness: For each retrieved piece of evidence, EASE assesses its reliability across multiple dimensions, applying the same rigor to reasoning and knowledge to assign the most appropriate supplementary information to each news item.
-
-- 📄 Explainability: In addition to verifying the authenticity of news, EASE enhances transparency and interpretability by offering detailed explanations and the reasoning behind them.
+> If you have any questions, please new an issue or contact `wgy3129@stu.ouc.edu.cn`.
 
 ## 📰 News
 
