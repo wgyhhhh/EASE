@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10](https://img.shields.io/badge/Python-3.10-blue.svg)](https://www.python.org/downloads/release/python-3100/)
 [![PyTorch 2.7.0](https://img.shields.io/badge/PyTorch-2.7.0-red.svg)](https://pytorch.org/)
-[![arXiv](https://img.shields.io/badge/arXiv-2510.11277-b31b1b.svg)](https://arxiv.org/abs/2510.11277
+[![arXiv](https://img.shields.io/badge/arXiv-2510.11277-b31b1b.svg)](https://arxiv.org/abs/2510.11277)
 
 EASE is an open-source, knowledge-augmented verification system for real-time fake news. EASE introduces a sequential evaluation mechanism comprising three independent perspectives: (1) Evidence-based evaluation, which assesses evidence and incorporates it into decision-making only when the evidence is sufficiently supportive; (2) Reasoning-based evaluation, which leverages the world knowledge of large language models (LLMs) and applies them only when their reliability is adequately established; and (3) Sentiment-based fallback, which integrates sentiment cues when neither evidence nor reasoning is reliable.
 
