@@ -112,34 +112,6 @@ def main():
     start_epoch = 1
     min_epoch = 1
 
-    if config.only_test_and_save_figs:
-        checkpoint = torch.load(config.best_ckpt_path, map_location=torch.device('cpu'))
-        model.load_state_dict(checkpoint)
-        config.work_dir = config.img_save_path
-        if not os.path.exists(config.work_dir + 'outputs/'):
-            os.makedirs(config.work_dir + 'outputs/')
-        results, labels, preds, ids = test_one_epoch(
-            test_loader,
-            model,
-            criterion,
-            logger,
-            config,
-        )
-        return
-
-    if os.path.exists(resume_model):
-        print('#----------Resume Model and Other params----------#')
-        checkpoint = torch.load(resume_model, map_location=torch.device('cpu'))
-        model.load_state_dict(checkpoint['model_state_dict'])
-        optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-        scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
-        saved_epoch = checkpoint['epoch']
-        start_epoch += saved_epoch
-        min_loss, min_epoch, loss = checkpoint['min_loss'], checkpoint['min_epoch'], checkpoint['loss']
-
-        log_info = f'resuming model from {resume_model}. resume_epoch: {saved_epoch}, min_loss: {min_loss:.4f}, min_epoch: {min_epoch}, loss: {loss:.4f}'
-        logger.info(log_info)
-
     step = 0
     print('#----------Training----------#')
     for epoch in range(start_epoch, config.epochs + 1):
@@ -194,9 +166,10 @@ def main():
             logger,
             config,
         )
+        expert_kind = config.expert_type
         os.rename(
             os.path.join(checkpoint_dir, 'best.pth'),
-            os.path.join(checkpoint_dir, f'best-epoch{min_epoch}-loss{min_loss:.4f}.pth')
+            os.path.join(checkpoint_dir, f'Expert_{expert_kind}.pth')
         )
 
 
