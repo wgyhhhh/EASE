@@ -90,15 +90,12 @@ After downloading the pretrained models from their links ([bert-base-uncased](ht
 
 #### Training Scripts
 ```bash
-# For training on the Chinese dataset
-bash train_zh.sh
-
-# For training on the English dataset
-bash train_en.sh
+# For training on FakeNewsDetection dataset
+bash train.sh
 ```
 
 #### Testing Scripts
-After obtaining the trained weights (saved in `checkpoint_model/{dataset}/Expert_{kind}.pkl`), simply update the corresponding paths in `test.sh` to run batch testing on the news dataset.
+After obtaining the trained weights (saved in `expert_{dataset}/checkpoints/Expert_{kind}.pth`), simply update the corresponding paths in `test.sh` to run batch testing on the news dataset.
 ```bash
 bash test.sh
 ```
