@@ -9,9 +9,9 @@ import copy
 from transformers import BertConfig, BertModel
 
 
-class ARGModel(torch.nn.Module):
+class EASE(torch.nn.Module):
     def __init__(self, config, expert_name, emb_dim, co_attention_dim, mlp_dims, mlp_dropout):
-        super(ARGModel, self).__init__()
+        super(EASE, self).__init__()
 
         # Get configuration values
         self.emb_dim = emb_dim
@@ -159,24 +159,6 @@ class ARGModel(torch.nn.Module):
             content_feature_2, FTR_4_feature, content_masks)
         expert_4 = torch.mean(mutual_content_FTR_4, dim=1)
 
-        # Cross attention between FTR and content features
-        mutual_FTR_content_2, _ = self.cross_attention_ftr_2( \
-            FTR_2_feature, content_feature_2, FTR_2_masks)
-        mutual_FTR_content_2 = torch.mean(mutual_FTR_content_2, dim=1)
-
-        mutual_FTR_content_3, _ = self.cross_attention_ftr_3( \
-            FTR_3_feature, content_feature_2, FTR_3_masks)
-        mutual_FTR_content_3 = torch.mean(mutual_FTR_content_3, dim=1)
-
-        mutual_FTR_content_4, _ = self.cross_attention_ftr_4( \
-            FTR_4_feature, content_feature_2, FTR_4_masks)
-        mutual_FTR_content_4 = torch.mean(mutual_FTR_content_4, dim=1)
-
-        # Hard feature predictions
-        hard_ftr_2_pred = self.hard_mlp_ftr_2(mutual_FTR_content_2).squeeze(1)
-        hard_ftr_3_pred = self.hard_mlp_ftr_3(mutual_FTR_content_3).squeeze(1)
-        hard_ftr_4_pred = self.hard_mlp_ftr_4(mutual_FTR_content_4).squeeze(1)
-
         # Simple feature predictions
         simple_ftr_2_pred = self.simple_mlp_ftr_2(self.simple_ftr_2_attention(FTR_2_feature)[0]).squeeze(1)
         simple_ftr_3_pred = self.simple_mlp_ftr_3(self.simple_ftr_3_attention(FTR_3_feature)[0]).squeeze(1)
@@ -185,81 +167,54 @@ class ARGModel(torch.nn.Module):
         # Content attention
         attn_content, _ = self.content_attention(content_feature_1, mask=content_masks)
 
-        # Score mapping for feature reweighting
-        reweight_score_ftr_2 = self.score_mapper_ftr_2(mutual_FTR_content_2)
-        reweight_score_ftr_3 = self.score_mapper_ftr_3(mutual_FTR_content_3)
-        reweight_score_ftr_4 = self.score_mapper_ftr_4(mutual_FTR_content_4)
-
-        # Reweight expert features
-        reweight_expert_2 = reweight_score_ftr_2 * expert_2
-        reweight_expert_3 = reweight_score_ftr_3 * expert_3
-        reweight_expert_4 = reweight_score_ftr_4 * expert_4
-
         # Expert-specific processing
-        if self.expert_type == 'sentiment' and not self.eval_mode or self.eval_expert == 'sentiment':
+        if self.expert_type == 'sentiment':
+            # print("Sentiment expert processing")
             all_feature = torch.cat(
-                (attn_content.unsqueeze(1), reweight_expert_2.unsqueeze(1)),
+                (attn_content.unsqueeze(1), expert_2.unsqueeze(1)),
                 dim=1
             )
             final_feature, _ = self.aggregator(all_feature)
             label_pred = self.mlp(final_feature)
-            gate_value = torch.concat([
-                reweight_score_ftr_2
-            ], dim=1)
 
             res = {
                 'classify_pred': torch.sigmoid(label_pred.squeeze(1)),
-                'gate_value': gate_value,
                 'final_feature': final_feature,
                 'content_feature': attn_content,
-                'ftr_2_feature': reweight_expert_2,
+                'simple_ftr_2_pred': simple_ftr_2_pred,
             }
 
-            res['hard_ftr_2_pred'] = hard_ftr_2_pred
-            res['simple_ftr_2_pred'] = simple_ftr_2_pred
-
-        if self.expert_type == 'reasoning' and not self.eval_mode or self.eval_expert == 'reasoning':
+        elif self.expert_type == 'reasoning':
+            # print("Reasoning expert processing")
             all_feature = torch.cat(
-                (attn_content.unsqueeze(1), reweight_expert_3.unsqueeze(1)),
+                (attn_content.unsqueeze(1), expert_3.unsqueeze(1)),
                 dim=1
             )
             final_feature, _ = self.aggregator(all_feature)
             label_pred = self.mlp(final_feature)
-            gate_value = torch.concat([
-                reweight_score_ftr_3
-            ], dim=1)
 
             res = {
                 'classify_pred': torch.sigmoid(label_pred.squeeze(1)),
-                'gate_value': gate_value,
                 'final_feature': final_feature,
                 'content_feature': attn_content,
-                'ftr_3_feature': reweight_expert_3,
+                'simple_ftr_3_pred': simple_ftr_3_pred,
             }
 
-            res['hard_ftr_3_pred'] = hard_ftr_3_pred
-            res['simple_ftr_3_pred'] = simple_ftr_3_pred
-
-        if self.expert_type == 'evidence' and not self.eval_mode or self.eval_expert == 'evidence':
+        elif self.expert_type == 'evidence':
+            # print("Evidence expert processing")
             all_feature = torch.cat(
-                (attn_content.unsqueeze(1), reweight_expert_4.unsqueeze(1)),
+                (attn_content.unsqueeze(1), expert_4.unsqueeze(1)),
                 dim=1
             )
             final_feature, _ = self.aggregator(all_feature)
             label_pred = self.mlp(final_feature)
-            gate_value = torch.concat([
-                reweight_score_ftr_4
-            ], dim=1)
+
 
             res = {
                 'classify_pred': torch.sigmoid(label_pred.squeeze(1)),
-                'gate_value': gate_value,
                 'final_feature': final_feature,
                 'content_feature': attn_content,
-                'ftr_4_feature': reweight_expert_4,
+                'simple_ftr_4_pred': simple_ftr_4_pred,
             }
-
-            res['hard_ftr_4_pred'] = hard_ftr_4_pred
-            res['simple_ftr_4_pred'] = simple_ftr_4_pred
 
         return res

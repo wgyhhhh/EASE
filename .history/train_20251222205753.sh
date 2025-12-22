@@ -1,4 +1,4 @@
-# Step3: Expert Training
+#expert
 python train.py \
     --batch_size 64 \
     --epochs 1 \

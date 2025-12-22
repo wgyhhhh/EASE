@@ -233,36 +233,6 @@ def cal_params_flops(model, config, logger):
 
     return 0, total_params
 
-
-def calculate_metrics(labels, preds, threshold=0.5):
-    """Calculate classification metrics"""
-    labels = np.array(labels)
-    preds = np.array(preds)
-
-    # Binary predictions
-    binary_preds = (preds >= threshold).astype(int)
-
-    # Calculate metrics
-    accuracy = accuracy_score(labels, binary_preds)
-    precision = precision_score(labels, binary_preds, zero_division=0)
-    recall = recall_score(labels, binary_preds, zero_division=0)
-    f1 = f1_score(labels, binary_preds, zero_division=0)
-
-    # AUC
-    try:
-        auc = roc_auc_score(labels, preds)
-    except:
-        auc = 0.0
-
-    return {
-        'accuracy': accuracy,
-        'precision': precision,
-        'recall': recall,
-        'f1': f1,
-        'auc': auc
-    }
-
-
 class Averager:
     """Simple average calculator"""
 
@@ -286,30 +256,35 @@ def data2gpu(batch, use_cuda):
         return batch
 
 
-class Recorder:
-    """Early stopping recorder"""
+class Recorder():
 
-    def __init__(self, patience=10):
-        self.patience = patience
-        self.counter = 0
-        self.best_score = None
-        self.early_stop = False
+    def __init__(self, early_step):
+        self.max = {'mac_f1': 0}
+        self.cur = {'mac_f1': 0}
+        self.maxindex = 0
+        self.curindex = 0
+        self.early_step = early_step
 
-    def add(self, results):
-        score = results['f1']  # Use F1 score for early stopping
+    def add(self, x):
+        self.cur = x
+        self.curindex += 1
+        print("current", self.cur)
+        return self.judge()
 
-        if self.best_score is None:
-            self.best_score = score
+    def judge(self):
+        if self.cur['mac_f1'] > self.max['mac_f1']:
+            self.max = self.cur
+            self.maxindex = self.curindex
+            self.showfinal()
             return 'save'
-        elif score < self.best_score:
-            self.counter += 1
-            if self.counter >= self.patience:
-                self.early_stop = True
-            return 'continue'
+        self.showfinal()
+        if self.curindex - self.maxindex >= self.early_step:
+            return 'esc'
         else:
-            self.best_score = score
-            self.counter = 0
-            return 'save'
+            return 'continue'
+
+    def showfinal(self):
+        print("Max", self.max)
 
 
 def save_results(results, labels, preds, ids, save_path):

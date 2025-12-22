@@ -17,15 +17,6 @@ class setting_config:
         'analyzer_parameter': 0.5
     }
 
-    datasets = 'weibo'
-    if datasets == 'weibo':
-        data_path = './data/weibo'
-    elif datasets == 'weibo21':
-        data_path = './data/weibo21/'
-    elif datasets == 'gossipcop':
-        data_path = './data/gossipcop/'
-    else:
-        raise Exception('datasets in not right!')
 
     criterion = 'BCELoss'
 
@@ -43,7 +34,6 @@ class setting_config:
     max_len = 197
     early_stop = 10
     use_cuda = True
-    work_dir = 'results/' + network + '_' + datasets + '/'
 
     print_interval = 20
     val_interval = 1

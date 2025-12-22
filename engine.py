@@ -6,7 +6,6 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 
 def train_one_epoch(train_loader,
                     model,
-                    criterion,
                     optimizer,
                     scheduler,
                     epoch,
@@ -19,11 +18,12 @@ def train_one_epoch(train_loader,
     '''
     # switch to train mode
     model.train()
-
+    citerion = torch.nn.BCELoss()
     loss_list = []
     avg_loss_classify = Averager()
-
-    for iter, batch in enumerate(train_loader):
+    train_data_iter = tqdm(train_loader)
+    
+    for iter, batch in enumerate(train_data_iter):
         step += iter
         optimizer.zero_grad()
 
@@ -36,7 +36,7 @@ def train_one_epoch(train_loader,
         res = model(**batch_input_data)
 
         # Calculate losses
-        loss_classify = criterion(res['classify_pred'], label.float())
+        loss_classify = citerion(res['classify_pred'], label.float())
         loss = loss_classify
 
         # Add auxiliary losses for experts
@@ -66,7 +66,7 @@ def train_one_epoch(train_loader,
 
         if iter % config.print_interval == 0:
             log_info = f'train: epoch {epoch}, iter:{iter}, loss: {np.mean(loss_list):.4f}, lr: {now_lr}'
-            print(log_info)
+            #print(log_info)
             logger.info(log_info)
 
     scheduler.step()
@@ -75,12 +75,12 @@ def train_one_epoch(train_loader,
 
 def val_one_epoch(val_loader,
                   model,
-                  criterion,
                   epoch,
                   logger,
                   config):
     # switch to evaluate mode
     model.eval()
+    citerion = torch.nn.BCELoss()
     preds = []
     labels = []
     loss_list = []
@@ -93,36 +93,34 @@ def val_one_epoch(val_loader,
             batch_input_data = {**config.__dict__, **batch_data}
             res = model(**batch_input_data)
 
-            loss_classify = criterion(res['classify_pred'], batch_label.float())
+            loss_classify = citerion(res['classify_pred'], batch_label.float())
 
             labels.extend(batch_label.detach().cpu().numpy().tolist())
             preds.extend(res['classify_pred'].detach().cpu().numpy().tolist())
             loss_list.append(loss_classify.item())
 
-    # Calculate metrics
     results = calculate_metrics(labels, preds, config.threshold)
     results['loss'] = np.mean(loss_list)
 
-    # 总是打印完整指标，移除条件判断
-    log_info = (f'val epoch: {epoch}, loss: {results["loss"]:.4f}, '
-                f'accuracy: {results["accuracy"]:.4f}, '
-                f'precision: {results["precision"]:.4f}, '
-                f'recall: {results["recall"]:.4f}, '
-                f'f1: {results["f1"]:.4f}, '
-                f'auc: {results["auc"]:.4f}')
-    print(log_info)
-    logger.info(log_info)
 
+    log_info = f'\n val epoch: {epoch}, loss: {results["loss"]:.4f}, auc: {results["auc"]:.4f}, accuracy: {results["accuracy"]:.4f}, ' \
+                f'precision: {results["precision"]:.4f}, precison_real: {results["precision_real"]:.4f}, precision_fake: {results["precision_fake"]:.4f}, ' \
+                f'recall: {results["recall"]:.4f}, recall_real: {results["recall_real"]:.4f}, recall_fake: {results["recall_fake"]:.4f} ' \
+                f'mac_f1: {results["mac_f1"]:.4f}, f1_real: {results["f1_real"]:.4f}, f1_fake: {results["f1_fake"]:.4f}\n'
+
+    #print(log_info)
+    logger.info(log_info)
+    
     return results
 
 def test_one_epoch(test_loader,
                    model,
-                   criterion,
                    logger,
                    config,
                    test_data_name=None):
     # switch to evaluate mode
     model.eval()
+    citerion = torch.nn.BCELoss()
     preds = []
     labels = []
     ids = []
@@ -137,7 +135,7 @@ def test_one_epoch(test_loader,
             batch_input_data = {**config.__dict__, **batch_data}
             res = model(**batch_input_data)
 
-            loss_classify = criterion(res['classify_pred'], batch_label.float())
+            loss_classify = citerion(res['classify_pred'], batch_label.float())
 
             labels.extend(batch_label.detach().cpu().numpy().tolist())
             preds.extend(res['classify_pred'].detach().cpu().numpy().tolist())
@@ -153,9 +151,10 @@ def test_one_epoch(test_loader,
         print(log_info)
         logger.info(log_info)
 
-    log_info = f'test of best model, loss: {results["loss"]:.4f}, accuracy: {results["accuracy"]:.4f}, ' \
-               f'precision: {results["precision"]:.4f}, recall: {results["recall"]:.4f}, ' \
-               f'f1: {results["f1"]:.4f}, auc: {results["auc"]:.4f}'
+    log_info = f'test of best model, loss: {results["loss"]:.4f}, auc: {results["auc"]:.4f}, accuracy: {results["accuracy"]:.4f}, ' \
+               f'precision: {results["precision"]:.4f}, precison_real: {results["precision_real"]:.4f}, precision_fake: {results["precision_fake"]:.4f}, ' \
+                f'recall: {results["recall"]:.4f}, recall_real: {results["recall_real"]:.4f}, recall_fake: {results["recall_fake"]:.4f} ' \
+                f'mac_f1: {results["mac_f1"]:.4f}, f1_real: {results["f1_real"]:.4f}, f1_fake: {results["f1_fake"]:.4f}'
     print(log_info)
     logger.info(log_info)
 
@@ -163,32 +162,24 @@ def test_one_epoch(test_loader,
 
 
 def calculate_metrics(labels, preds, threshold=0.5):
-    """Calculate classification metrics"""
-    labels = np.array(labels)
-    preds = np.array(preds)
+    all_metrics = {}
+
+    all_metrics['auc'] = roc_auc_score(labels, preds, average='macro')
+    all_metrics['spauc'] = roc_auc_score(labels, preds, average='macro', max_fpr=0.1)
 
     # Binary predictions
-    binary_preds = (preds >= threshold).astype(int)
 
-    # Calculate metrics
-    accuracy = accuracy_score(labels, binary_preds)
-    precision = precision_score(labels, binary_preds, zero_division=0)
-    recall = recall_score(labels, binary_preds, zero_division=0)
-    f1 = f1_score(labels, binary_preds, zero_division=0)
+    binary_preds = np.around(np.array(preds)).astype(int)
 
-    # AUC
-    try:
-        auc = roc_auc_score(labels, preds)
-    except:
-        auc = 0.0
+    all_metrics['mac_f1'] = f1_score(labels, binary_preds, average='macro')
+    all_metrics['f1_real'], all_metrics['f1_fake'] = f1_score(labels, binary_preds, average=None)
+    all_metrics['recall'] = recall_score(labels, binary_preds, average='macro')
+    all_metrics['recall_real'], all_metrics['recall_fake'] = recall_score(labels, binary_preds, average=None)
+    all_metrics['precision'] = precision_score(labels, binary_preds, average='macro')
+    all_metrics['precision_real'], all_metrics['precision_fake'] = precision_score(labels, binary_preds, average=None)
+    all_metrics['accuracy'] = accuracy_score(labels, binary_preds)
 
-    return {
-        'accuracy': accuracy,
-        'precision': precision,
-        'recall': recall,
-        'f1': f1,
-        'auc': auc
-    }
+    return all_metrics
 
 
 class Averager:
