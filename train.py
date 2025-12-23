@@ -28,6 +28,8 @@ def main():
     config.bert_path = args.bert_path
     config.expert_type = args.expert_type
     config.datasets = args.datasets
+    config.analyzer_parameter = args.analyzer_parameter
+    config.lr = args.lr
     config.work_dir = f'./results/EASE_{config.expert_type}_{config.datasets}/'
 
     if config.datasets == 'weibo':
@@ -167,13 +169,16 @@ def main():
             config
         )
 
+
 import argparse
+
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Training Config')
     parser.add_argument('--batch_size', type=int, default=32, help='batch size')
     parser.add_argument('--epochs', type=int, default=1, help='number of epochs')
     parser.add_argument('--seed', type=int, default=3759, help='random seed')
+    parser.add_argument('--lr', type=float, default=2e-5, help='learning rate')
     parser.add_argument('--gpu_id', type=str, default='0', help='GPU ID')
     parser.add_argument('--early_stop', type=int, default=10, help='early stop patience')
     parser.add_argument('--bert_path', type=str,
@@ -181,6 +186,7 @@ def parse_args():
                         help='BERT model path')
     parser.add_argument('--expert_type', type=str, default='sentiment', help='expert type')
     parser.add_argument('--datasets', type=str, default='weibo', help='dataset name')
+    parser.add_argument('--analyzer_parameter', type=float, default=1.8, help='analyzer parameter weight')
     return parser.parse_args()
 
 

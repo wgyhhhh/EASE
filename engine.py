@@ -43,15 +43,15 @@ def train_one_epoch(train_loader,
         if config.expert_type == 'sentiment':
             simple_ftr_2_label = batch_data['FTR_2_pred']
             loss_simple_aux = torch.nn.CrossEntropyLoss()(res['simple_ftr_2_pred'], simple_ftr_2_label.long())
-            loss += config.model_config['analyzer_parameter'] * loss_simple_aux
+            loss += config.analyzer_parameter * loss_simple_aux
         elif config.expert_type == 'reasoning':
             simple_ftr_3_label = batch_data['FTR_3_pred']
             loss_simple_aux = torch.nn.CrossEntropyLoss()(res['simple_ftr_3_pred'], simple_ftr_3_label.long())
-            loss += config.model_config['analyzer_parameter'] * loss_simple_aux
+            loss += config.analyzer_parameter * loss_simple_aux
         elif config.expert_type == 'evidence':
             simple_ftr_4_label = batch_data['FTR_4_pred']
             loss_simple_aux = torch.nn.CrossEntropyLoss()(res['simple_ftr_4_pred'], simple_ftr_4_label.long())
-            loss += config.model_config['analyzer_parameter'] * loss_simple_aux
+            loss += config.analyzer_parameter * loss_simple_aux
 
         # Backward pass
         loss.backward()

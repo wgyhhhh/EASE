@@ -116,7 +116,7 @@ def main():
     sentiment_expert.load_state_dict(best_weight_sentiment)
 
     results, labels_sentiment, preds_sentiment, ids = test_one_epoch(
-        test_loader=test_loader_sentiment,
+        test_loader=test_loader_evidence,
         model=sentiment_expert,
         logger=logger,   
         config=config,  
@@ -127,7 +127,7 @@ def main():
     best_weight_reasoning = torch.load(config.work_dir + f'EASE_reasoning_{config.datasets}/checkpoints/parameter_reasoning_{config.datasets}.pkl', map_location=torch.device('cpu'))
     reasoning_expert.load_state_dict(best_weight_reasoning)
     results, labels_reasoning, preds_reasoning, ids = test_one_epoch(
-        test_loader=test_loader_reasoning,
+        test_loader=test_loader_evidence,
         model=reasoning_expert,
         logger=logger,   
         config=config,   
@@ -174,35 +174,12 @@ def main():
         print(f"  {expert_name.capitalize()} Expert: {count} samples ({percentage:.2f}%)")
 
     print(f"  Total: {total_samples} samples")
-    print("="*60 + "\n")
+    print("="*60)
 
     final_results = calculate_metrics(all_labels, all_preds)
     
-    print("\n" + "="*60)
-    print("TEST RESULTS SUMMARY:")
-    print("="*60)
-        
-   
-    print("\nBasic Metrics:")
-    print(f"  AUC:           {final_results['auc']:.4f}")
-    print(f"  Accuracy:      {final_results['accuracy']:.4f}")
-    print(f"  Macro F1:      {final_results['mac_f1']:.4f}")
-    print(f"  Recall:        {final_results['recall']:.4f}")
-    print(f"  Precision:     {final_results['precision']:.4f}")
-        
-    print("\nReal Class (0) Metrics:")
-    print(f"  Precision:     {final_results['precision_real']:.4f}")
-    print(f"  Recall:        {final_results['recall_real']:.4f}")
-    print(f"  F1 Score:      {final_results['f1_real']:.4f}")
-        
-    print("\nFake Class (1) Metrics:")
-    print(f"  Precision:     {final_results['precision_fake']:.4f}")
-    print(f"  Recall:        {final_results['recall_fake']:.4f}")
-    print(f"  F1 Score:      {final_results['f1_fake']:.4f}")
-        
+    print(final_results)
     print("="*60 + "\n")
-
-
 import argparse
 
 
