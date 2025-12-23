@@ -58,17 +58,17 @@ class FakeNewsDataset(Dataset):
         content_masks = content_masks.squeeze(0)
 
         # Text encoding for expert features
-        ftr_2_text = item.get('FTR_2', '')
+        ftr_2_text = item.get('sentiment', '')
         ftr_2_token_ids, ftr_2_masks = word2input([ftr_2_text], self.max_len, self.tokenizer)
         ftr_2_token_ids = ftr_2_token_ids.squeeze(0)
         ftr_2_masks = ftr_2_masks.squeeze(0)
 
-        ftr_3_text = item.get('FTR_3', '')
+        ftr_3_text = item.get('reasoning', '')
         ftr_3_token_ids, ftr_3_masks = word2input([ftr_3_text], self.max_len, self.tokenizer)
         ftr_3_token_ids = ftr_3_token_ids.squeeze(0)
         ftr_3_masks = ftr_3_masks.squeeze(0)
 
-        ftr_4_text = item.get('FTR_4', '')
+        ftr_4_text = item.get('evidence', '')
         ftr_4_token_ids, ftr_4_masks = word2input([ftr_4_text], self.max_len, self.tokenizer)
         ftr_4_token_ids = ftr_4_token_ids.squeeze(0)
         ftr_4_masks = ftr_4_masks.squeeze(0)
@@ -78,23 +78,23 @@ class FakeNewsDataset(Dataset):
         label = torch.tensor(label_dict.get(raw_label, raw_label), dtype=torch.float)
 
         # Expert features
-        ftr_2_pred_raw = item.get('FTR_2_pred', 0)
+        ftr_2_pred_raw = item.get('sentiment_pred', 0)
         ftr_2_pred = torch.tensor(label_dict_ftr_pred.get(ftr_2_pred_raw, ftr_2_pred_raw), dtype=torch.long)
 
-        ftr_3_pred_raw = item.get('FTR_3_pred', 0)
+        ftr_3_pred_raw = item.get('reasoning_pred', 0)
         ftr_3_pred = torch.tensor(label_dict_ftr_pred.get(ftr_3_pred_raw, ftr_3_pred_raw), dtype=torch.long)
 
-        ftr_4_pred_raw = item.get('FTR_4_pred', 0)
+        ftr_4_pred_raw = item.get('evidence_pred', 0)
         ftr_4_pred = torch.tensor(label_dict_ftr_pred.get(ftr_4_pred_raw, ftr_4_pred_raw), dtype=torch.long)
 
         # Accuracy features
-        ftr_2_acc = torch.tensor(float(item.get('FTR_2_acc', 0)), dtype=torch.float)
-        ftr_3_acc = torch.tensor(float(item.get('FTR_3_acc', 0)), dtype=torch.float)
-        ftr_4_acc = torch.tensor(float(item.get('FTR_4_acc', 0)), dtype=torch.float)
+        ftr_2_acc = torch.tensor(float(item.get('sentiment_acc', 0)), dtype=torch.float)
+        ftr_3_acc = torch.tensor(float(item.get('reasoning_acc', 0)), dtype=torch.float)
+        ftr_4_acc = torch.tensor(float(item.get('evidence_acc', 0)), dtype=torch.float)
 
         # Additional features
-        evi_reliable = torch.tensor(float(item.get('evi_reliable', 0)), dtype=torch.float)
-        rea_reliable = torch.tensor(float(item.get('rea_reliable', 0)), dtype=torch.float)
+        evi_reliable = torch.tensor(float(item.get('evidence_reliable', 0)), dtype=torch.float)
+        rea_reliable = torch.tensor(float(item.get('reasoning_reliable', 0)), dtype=torch.float)
 
         # ID for tracking
         item_id = item.get('id', idx)
