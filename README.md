@@ -6,8 +6,7 @@
 [![Python 3.10](https://img.shields.io/badge/Python-3.10-blue.svg)](https://www.python.org/downloads/release/python-3100/)
 [![PyTorch 2.7.0](https://img.shields.io/badge/PyTorch-2.7.0-red.svg)](https://pytorch.org/)
 [![arXiv](https://img.shields.io/badge/arXiv-2510.11277-b31b1b.svg)](https://arxiv.org/abs/2510.11277)
-
-EASE is an open-source, knowledge-augmented verification system for real-time fake news. EASE introduces a sequential evaluation mechanism comprising three independent perspectives: (1) Evidence-based evaluation, which assesses evidence and incorporates it into decision-making only when the evidence is sufficiently supportive; (2) Reasoning-based evaluation, which leverages the commonsense and logical knowledge of large language models and applies them only when their reliability is adequately established; and (3) Sentiment-based fallback, which integrates sentiment cues when neither evidence nor reasoning is reliable.
+[![GitHub Stars](https://img.shields.io/github/stars/wgyhhhh/EASE?style=social)](https://github.com/wgyhhhh/EASE/stargazers)
 
 <img src="./ease.png" alt="drawing" width="800"/>
 
@@ -25,23 +24,19 @@ EASE is an open-source, knowledge-augmented verification system for real-time fa
 [2025.10.17] We have publicly released the RealTimeNews-2025 Dataset. Researchers can now download and use it by completing [this form](https://forms.office.com/r/mJRTtJR2Qf).
 
 <details>
-<summary><b>📋 Previous Releases</b></summary>
+<summary><b>Previous Releases</b></summary>
 
 </details>
 
-## 👀 About RealTimeNews-2025
-
-Conventional fake news datasets often comprise news that is several years old. Such instances are grounded in a wealth of post-hoc evidence, including public discussions, official statements, and scientific articles. To advance research on real-time fake news detection, we introduce a new benchmark, RealTimeNews-25, consisting of 3,487 news articles collected between June 2024 and September 2025. The dataset covers recent and rapidly evolving events characterized by limited supporting evidence, providing a challenging and timely benchmark for evaluating model robustness in real-world, time-sensitive scenarios.
-
-### ⬇ Download
+## 📊 Dataset Download
 
 This dataset can be accessed by completing the [Application to Use the RealTimeNews-2025 from EASE for Real-Time Fake News Detection](https://forms.office.com/r/mJRTtJR2Qf). Upon approval, it will be available for download and use.
 
-### ✨ Dataset Examples
+### Dataset Examples
 
 <img src="assets/Realtimenews.png" class="floatpic">
 
-### ⚙️ Dataset Format
+
 The dataset is structured as follows:
 
 ```
@@ -53,20 +48,6 @@ The dataset is structured as follows:
         ├── 1.jpg
         ├── 2.png
         └── ... # {id}.jpg/png/webp
-```
-
-Format of `news/news.json`:
-```
-  {
-    "id": 0,
-    "content": "Death of Slim Shady: The controversial legacy of Eminem's peroxide-blond alter ego",
-    "sentiment": "The title uses the provocative term \"Death\" and frames the topic around a \"controversial legacy,\" which is emotionally charged and designed to attract attention. However, it does not employ exaggerated alarmism or overtly manipulative language, instead presenting a subjective but plausible cultural analysis.",
-    "reasoning": "The title uses metaphorical language common in music journalism. \"Death\" refers to artistic retirement of a persona, not physical death. This follows logical patterns where artists retire alter egos while the actual person (Eminem) continues living.",
-    "evidence": "In his new album \"The Death of Slim Shady (Coup De Grâce),\" Eminem examines the controversial legacy of his Slim Shady persona and announces his departure from the character. He reflects on the persona's profound impact on his career, noting that it nearly cost him his career, family, and life, and that his life has improved since Slim Shady faded away. These points are supported by sources including People, The Independent, and UMusic.",
-    "evidence_source": "none",
-    "label": "real",
-    "image": "0.jpg"
-  },
 ```
 
 ## 👨‍💻 Code
@@ -87,6 +68,36 @@ pip install -r requirements.txt
 ### Pretrained BERT
 
 After downloading the pretrained models from their links ([bert-base-uncased](https://huggingface.co/google-bert/bert-base-uncased) and [chinese-bert-wwm-ext](https://huggingface.co/hfl/chinese-bert-wwm-ext)), please configure the local `bert_path` in your scripts.
+
+### Prepare Dataset
+
+The dataset should be organized in the following format and placed in the `/data/` directory, divided into `train.json`, `val.json`, and `test.json`:
+
+```
+[
+  {
+    "id": 0,
+    "content": "News",
+    "label": "real", # real or fake
+    "sentiment": "Sentiment analysis from Agent",
+    "reasoning": "Reasoning knowledge from Agent",
+    "evidence": "External evidence from Agent",
+    "sentiment_pred": "fake", # Prediction for the news based on this knowledge
+    "reasoning_pred": "real",
+    "evidence_pred": "real",
+    "sentiment_acc": 0, # Whether it matches the label (1 if matches, otherwise 0)
+    "reasoning_acc": 1,
+    "evidence_acc": 1
+  },
+  {
+    "id": 1,
+    "content": "News",
+    ...
+  },
+  ...
+]
+```
+
 
 ### Run
 
