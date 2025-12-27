@@ -1,0 +1,8 @@
+Shorthand,Platform,Name, Context window,Cost per 1M input tokens,Cost per 1M output tokens
+gpt_4o_mini,OPENAI,gpt-4o-mini-2024-07-18, 128_000,0.15,0.6
+gpt_4o,OPENAI,gpt-4o-2024-08-06, 128_000,2.5,10.0
+gpt_4_turbo,OPENAI,gpt-4-0125-preview, 128_000,10.0,30.0
+gpt_4,OPENAI,gpt-4, 8_192,30.0,60.0
+gpt_4_32k,OPENAI,gpt-4-32k, 32_768,60.0,120.0
+gpt_35_turbo,OPENAI,gpt-3.5-turbo-0125, 16_385,0.5,1.5
+gpt_35_turbo_16k,OPENAI,gpt-3.5-turbo-16k-0613, 16_385,3.0,4.0
