@@ -1,8 +1,10 @@
 import os, sys, json
 from tqdm import tqdm
-from enum import Enum
+current_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(current_dir)
+sys.path.insert(0, project_root)
+
 from agent.fact_checker import FactChecker
-from ezmm import Image
 
 def process_json(input_path, output_path):
     fact_checker = FactChecker(llm="gpt_4o")
@@ -13,32 +15,25 @@ def process_json(input_path, output_path):
     for item in tqdm(data, desc="Processing", unit="item"):
         claim_text = item.get("content", "")
         
-        item["claim"] = [claim_text]
-        result, _ = fact_checker.verify_claim(item["claim"])
+
+        result, _ = fact_checker.verify_claim([claim_text])
 
         item["evidence"] = result.justification if result.justification else ""
 
-        if hasattr(result.verdict, 'value'):
-            item["evidence_pred"] = result.verdict.value  
+        if result.verdict:
+            item["evidence_pred"] = result.verdict.name
         else:
-            item["evidence_pred"] = str(result.verdict)
+            item["evidence_pred"] = ""
 
         if "label" in item:
-            if hasattr(item["label"], 'value'):
-                original_label = item["label"].value
-            else:
-                original_label = str(item["label"])
-            
-            if hasattr(result.verdict, 'value'):
-                predicted_label = result.verdict.value
-            else:
-                predicted_label = str(result.verdict)
-            
-            item["evidence_acc"] = 1 if predicted_label == original_label else 0
+            label = item["label"]
+            original = label if isinstance(label, str) else getattr(label, 'name', str(label))
+            predicted = item["evidence_pred"]
+            item["evidence_acc"] = 1 if predicted == original else 0
         else:
-            item["evidence_acc"] = 0  
+            item["evidence_acc"] = 0
     
     with open(output_path, 'w') as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
-process_json("input.json", "output.json")
+process_json("", "")
