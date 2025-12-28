@@ -36,7 +36,7 @@ We use a specific media reference notation format. Images are referred to as
 Each medium reference is then followed by the corresponding base64 data. Use the reference notation if you want to
 refer to any media in your response."""
 
-AVAILABLE_MODELS = pd.read_csv("/home/test3/test3/test3/wgy/DEFAME-main/config/available_models.csv", skipinitialspace=True)
+AVAILABLE_MODELS = pd.read_csv("./config/available_models.csv", skipinitialspace=True)
 
 
 def model_specifier_to_shorthand(specifier: str) -> str:
@@ -80,11 +80,12 @@ def get_model_api_pricing(name: str) -> tuple[float, float]:
 
 
 class OpenAIAPI:
-    def __init__(self, model: str):
+    def __init__(self, model: str, base_url: str = "https://xiaoai.plus/v1"):
         self.model = model
+        self.base_url = base_url  # 使用默认的 OpenAI API URL，或者传入自定义的 base_url
         if not api_keys["openai_api_key"]:
             raise ValueError("No OpenAI API key provided. Add it to config/api_keys.yaml")
-        self.client = OpenAI(api_key=api_keys["openai_api_key"])
+        self.client = OpenAI(api_key=api_keys["openai_api_key"], base_url=self.base_url)
 
     def __call__(self, prompt: Prompt, system_prompt: str, **kwargs):
         if prompt.has_videos():

@@ -2,7 +2,7 @@ import dataclasses
 
 from agent.common import Report, logger, Model, Prompt, Label
 from agent.common.label import DEFAULT_LABEL_DEFINITIONS
-from agent.prompts.prompts import JudgePrompt
+from agent.prompts.prompts import JudgePrompt, JudgeReasonPrompt
 
 
 @dataclasses.dataclass()
@@ -41,6 +41,13 @@ class Judge:
         prompt = JudgePrompt(doc, classes, self.class_definitions, self.extra_rules)
         return self._generate_verdict(prompt)
 
+    def judge_reasoning(self, doc: Report) -> Label:
+        classes = self.classes.copy()
+
+        prompt = JudgeReasonPrompt(doc, classes, self.class_definitions, self.extra_rules)
+        
+        return self._generate_verdict(prompt)
+    
     def _generate_verdict(self, prompt: Prompt) -> Label:
         response = self.llm.generate(prompt)
 

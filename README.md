@@ -10,7 +10,7 @@
 
 <img src="./ease.png" alt="drawing" width="800"/>
 
-> [Guangyu Wei*](https://isxinliu.github.io/), [Ke Han*](https://scholar.google.com/citations?user=aTZSYhwAAAAJ&hl=en), [Yueming Lyu†](https://scholar.google.com/citations?user=TxuK84wAAAAJ&hl=zh-CN), [Yu Luo](https://scholar.google.com/citations?user=Q__ApKoAAAAJ&hl=zh-CN), [Yue Jiang](https://openreview.net/profile?id=~Yue_Jiang3), [Caifeng Shan](https://scholar.google.com/citations?hl=zh-CN&user=fIXA_SsAAAAJ), [Nicu Sebe](https://scholar.google.com/citations?hl=zh-CN&user=stFCYOAAAAAJ)<br>
+> [Guangyu Wei*](https://wgyhhh.top/), [Ke Han*](https://scholar.google.com/citations?user=aTZSYhwAAAAJ&hl=en), [Yueming Lyu†](https://scholar.google.com/citations?user=TxuK84wAAAAJ&hl=zh-CN), [Yu Luo](https://scholar.google.com/citations?user=Q__ApKoAAAAJ&hl=zh-CN), [Yue Jiang](https://openreview.net/profile?id=~Yue_Jiang3), [Caifeng Shan](https://scholar.google.com/citations?hl=zh-CN&user=fIXA_SsAAAAJ), [Nicu Sebe](https://scholar.google.com/citations?hl=zh-CN&user=stFCYOAAAAAJ)<br>
 > (*Contribute equally, †Corresponding author)
 
 **<font color='red'>We will publicly release all implementation details, including code, datasets, and infrastructure, to enable result verification and contribute to the research community.</font>**
@@ -56,7 +56,7 @@ The dataset is structured as follows:
 1. **Clone the repository:**
 ```bash 
 git clone https://github.com/wgyhhhh/EASE.git
-cd EASE
+cd EASE/Expert
  ```
 2. **Install dependencies:**
 ```bash 
@@ -97,7 +97,7 @@ The dataset should be organized in the following format and placed in the `/data
 ###### Domain Knowledge Generation
 
 ```
-cd Agent
+cd EASE/Agent
 conda create --name Agent python=3.10
 conda activate Agent
 pip install -r requirements.txt

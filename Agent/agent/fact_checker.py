@@ -12,6 +12,8 @@ from agent.common.label import DEFAULT_LABEL_DEFINITIONS
 from agent.common.modeling import make_model
 from agent.modules.actor import Actor
 from agent.modules.claim_extractor import ClaimExtractor
+from agent.modules.reason import ReasonGeneration
+from agent.modules.sentiment import SentimentGeneration
 from agent.modules.doc_summarizer import DocSummarizer
 from agent.modules.judge import Judge
 from agent.modules.planner import Planner
@@ -22,7 +24,7 @@ from agent.evidence_retrieval.tools.tool import get_available_actions
 from agent.utils.console import gray, light_blue, bold, sec2mmss
 
 
-class FactChecker:
+class Agent:
     """The core class for end-to-end fact verification."""
 
     default_procedure = "default"
@@ -87,6 +89,9 @@ class FactChecker:
 
         self.doc_summarizer = DocSummarizer(self.llm)
 
+        self.reasoning_generation = ReasonGeneration(self.llm)
+        self.sentiment_generation = SentimentGeneration(self.llm)
+
         if procedure_variant is None:
             procedure_variant = self.default_procedure
 
@@ -134,11 +139,26 @@ class FactChecker:
             logger.warning("The model refused to answer.")
         else:
             doc.justification = self.doc_summarizer.summarize(doc)
-            logger.info(bold(f"The claim '{light_blue(str(claim))}' is {label.value}."))
+            logger.info(bold(f"From the external evidence perspective, the news '{light_blue(str(claim))}' is {label.value}."))
             logger.info(f'Justification: {gray(doc.justification)}')
         doc.verdict = label
 
-        stats["Duration"] = time.time() - start
+        stats["Duration_Evidence"] = time.time() - start
+
+        start = time.time()
+        doc.reasoning_justification = self.reasoning_generation.generation(doc)
+        doc.reason_verdict = self.judge.judge_reasoning(doc)
+        logger.info(bold(f"From the reasoning knowledge perspective, the news '{light_blue(str(claim))}' is {doc.reason_verdict.value}."))
+        logger.info(f'Justification: {gray(doc.reasoning_justification)}')
+        stats["Duration_Reasoning"] = time.time() - start
+
+        start = time.time()
+        doc.sentiment_justification = self.sentiment_generation.generation(doc)
+        doc.sentiment_verdict = self.judge.judge_reasoning(doc)
+        logger.info(bold(f"From the sentiment analysis perspective, the news '{light_blue(str(claim))}' is {doc.sentiment_verdict.value}."))
+        logger.info(f'Justification: {gray(doc.sentiment_justification)}')
+        stats["Duration_Sentiment"] = time.time() - start
+
         stats["Model"] = self.llm.get_stats()
         stats["Tools"] = self.actor.get_tool_stats()
         meta["Statistics"] = stats

@@ -64,6 +64,10 @@ class Report:
     record: list  # contains intermediate reasoning and evidence, organized in blocks
     verdict: Label = None
     justification: str = None
+    reasoning_justification: str = None
+    reason_verdict: Label = None
+    sentiment_justification: str = None
+    sentiment_verdict: Label = None
 
     def __init__(self, claim: Claim):
         self.claim = claim
@@ -108,6 +112,14 @@ class Report:
             doc_str += f"\n\n### Verdict: {self.verdict.name}"
         if self.justification:
             doc_str += f"\n\n### Justification\n{self.justification}"
+        if self.reasoning_justification:
+            doc_str += f"\n\n### Reasoning Justification\n{self.reasoning_justification}"
+        if self.reason_verdict:
+            doc_str += f"\n\n### Reasoning Verdict: {self.reason_verdict.name}"
+        if self.sentiment_justification:
+            doc_str += f"\n\n### Sentiment Justification\n{self.sentiment_justification}"
+        if self.sentiment_verdict:
+            doc_str += f"\n\n### Sentiment Verdict: {self.sentiment_verdict.name}"
         return doc_str
 
     def add_reasoning(self, text: str):
@@ -135,4 +147,4 @@ class Report:
 
     def get_result_as_dict(self) -> dict:
         """Returns the final verdict and the justification as a dictionary."""
-        return {"verdict": self.verdict.name, "justification": self.justification}
+        return {"verdict": self.verdict.name, "justification": self.justification, "reasoning_verdict": self.reason_verdict, "reasoning_justification": self.reasoning_justification, "sentiment_verdict": self.sentiment_verdict, "sentiment_justification": self.sentiment_justification}

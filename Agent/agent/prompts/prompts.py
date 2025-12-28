@@ -45,7 +45,39 @@ class JudgePrompt(Prompt):
         else:
             return dict(verdict=verdict, response=response)
 
+class JudgeReasonPrompt(Prompt):
+    template_file_path = os.path.join(current_dir, "judge.md")
+    retry_instruction = ("(Do not forget to choose one option from Decision Options "
+                         "and enclose it in backticks like `this`)")
 
+    def __init__(self, doc: Report,
+                 classes: Collection[Label],
+                 class_definitions: dict[Label, str] = None,
+                 extra_rules: str = None):
+        if class_definitions is None:
+            class_definitions = DEFAULT_LABEL_DEFINITIONS
+        
+        self.classes = classes
+        class_str = '\n'.join([f"* `{cls.value}`: {remove_non_symbols(class_definitions[cls])}"
+                               for cls in classes])
+        
+        if hasattr(doc, 'reasoning_justification') and doc.reasoning_justification:
+            reasoning_text = doc.reasoning_justification
+        
+        placeholder_targets = {
+            "[DOC]": reasoning_text,  
+            "[CLASSES]": class_str,
+            "[EXTRA_RULES]": "" if extra_rules is None else remove_non_symbols(extra_rules),
+        }
+        super().__init__(placeholder_targets=placeholder_targets)
+    
+    def extract(self, response: str) -> dict | str | None:
+        verdict = extract_verdict(response, classes=self.classes)
+        if verdict is None:
+            return None
+        else:
+            return dict(verdict=verdict, response=response)
+        
 class SummarizeSourcePrompt(Prompt):
     template_file_path = os.path.join(current_dir, "summarize_source.md")
 
@@ -72,7 +104,6 @@ class SummarizeDocPrompt(Prompt):
 
     def __init__(self, doc: Report):
         super().__init__(placeholder_targets={"[DOC]": doc})
-
 
 class PlanPrompt(Prompt):
     template_file_path = os.path.join(current_dir, "plan.md")
@@ -258,6 +289,40 @@ class AnswerQuestion(Prompt):
             out.update(dict(answer=answer))
 
         return out
+
+class AnswerQuestionWithReasoning(Prompt):
+    """Used to generate answers to the AVeriTeC questions."""
+    template_file_path = os.path.join(current_dir, "claim_reasoning.md")
+
+    def __init__(self, doc: Report):
+        full_str = str(doc)
+        claim_start = full_str.find("Claim: \"")
+        if claim_start != -1:
+            claim_end = full_str.find("\n\n##", claim_start)
+            if claim_end == -1:
+                claim_end = len(full_str)
+            claim_text = full_str[claim_start:claim_end]
+        else:
+            claim_text = str(doc.claim)
+        
+        super().__init__(placeholder_targets={"[CLAIM]": claim_text})
+
+class AnswerQuestionWithSentiment(Prompt):
+    """Used to generate answers to the AVeriTeC questions."""
+    template_file_path = os.path.join(current_dir, "claim_sentiment.md")
+
+    def __init__(self, doc: Report):
+        full_str = str(doc)
+        claim_start = full_str.find("Claim: \"")
+        if claim_start != -1:
+            claim_end = full_str.find("\n\n##", claim_start)
+            if claim_end == -1:
+                claim_end = len(full_str)
+            claim_text = full_str[claim_start:claim_end]
+        else:
+            claim_text = str(doc.claim)
+        
+        super().__init__(placeholder_targets={"[CLAIM]": claim_text})
 
 
 class AnswerQuestionNoEvidence(Prompt):
