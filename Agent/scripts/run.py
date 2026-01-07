@@ -1,13 +1,15 @@
 import os, sys, json
+os.environ["LANGUAGE"] = "zh" # Set language to Chinese, you can change it to "en" for English
+
 from tqdm import tqdm
 current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.dirname(current_dir)
 sys.path.insert(0, project_root)
-
 from agent.fact_checker import Agent
 
+
 def process_json(input_path, output_path):
-    fact_checker = Agent(llm="gpt_4o")
+    fact_checker = Agent(llm="gpt_4o_mini")
     
     with open(input_path, 'r') as f:
         data = json.load(f)
@@ -66,4 +68,4 @@ def process_json(input_path, output_path):
     with open(output_path, 'w') as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
-process_json("input.json", "output.json")
+process_json("/home/test3/test3/test3/wgy/DEFAME-main/data/input.json", "/home/test3/test3/test3/wgy/DEFAME-main/data/inpu1t.json")

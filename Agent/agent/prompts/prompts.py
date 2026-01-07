@@ -16,9 +16,43 @@ from agent.utils.parsing import (remove_non_symbols, extract_last_code_span, rea
 SYMBOL = 'Check-worthy'
 NOT_SYMBOL = 'Unimportant'
 
+class LanguageConfig:
+    _current = None 
+    
+    @classmethod
+    def _get_language_from_env(cls):
+
+        language = os.environ.get("LANGUAGE", "en").lower()
+        if language in ["zh", "zh-cn", "zh_tw", "cn", "chinese"]:
+            return "zh"
+        elif language in ["en", "english"]:
+            return "en"
+        else:
+            print(f"Warning: Unsupported language '{language}', using 'en'")
+            return "en"
+    
+    @classmethod
+    def get_current(cls):
+
+        if cls._current is None:
+            cls._current = cls._get_language_from_env()
+        return cls._current
+    
+    @classmethod
+    def set_language(cls, language: str):
+
+        language = language.lower().strip()
+        if language in ["zh", "zh-cn", "zh_tw", "cn", "chinese"]:
+            cls._current = "zh"
+        elif language in ["en", "english"]:
+            cls._current = "en"
+        else:
+            print(f"Warning: Unsupported language '{language}', using 'en'")
+            cls._current = "en"
+        print(f"Language set to: {cls._current}")
 
 class JudgePrompt(Prompt):
-    template_file_path = os.path.join(current_dir, "judge.md")
+    template_file_path = os.path.join(current_dir, f"{LanguageConfig.get_current()}/judge.md")
     retry_instruction = ("(Do not forget to choose one option from Decision Options "
                          "and enclose it in backticks like `this`)")
 
@@ -46,7 +80,7 @@ class JudgePrompt(Prompt):
             return dict(verdict=verdict, response=response)
 
 class JudgeReasonPrompt(Prompt):
-    template_file_path = os.path.join(current_dir, "judge.md")
+    template_file_path = os.path.join(current_dir, f"{LanguageConfig.get_current()}/judge.md")
     retry_instruction = ("(Do not forget to choose one option from Decision Options "
                          "and enclose it in backticks like `this`)")
 
@@ -79,7 +113,7 @@ class JudgeReasonPrompt(Prompt):
             return dict(verdict=verdict, response=response)
         
 class SummarizeSourcePrompt(Prompt):
-    template_file_path = os.path.join(current_dir, "summarize_source.md")
+    template_file_path = os.path.join(current_dir, f"{LanguageConfig.get_current()}/summarize_source.md")
 
     def __init__(self, source: Source, doc: Report):
         placeholder_targets = {
@@ -90,7 +124,7 @@ class SummarizeSourcePrompt(Prompt):
 
 
 class SummarizeManipulationResultPrompt(Prompt):
-    template_file_path = os.path.join(current_dir, "summarize_manipulation_result.md")
+    template_file_path = os.path.join(current_dir, f"{LanguageConfig.get_current()}/summarize_manipulation_result.md")
 
     def __init__(self, manipulation_result: Results):
         placeholder_targets = {
@@ -100,13 +134,13 @@ class SummarizeManipulationResultPrompt(Prompt):
 
 
 class SummarizeDocPrompt(Prompt):
-    template_file_path = os.path.join(current_dir, "summarize_doc.md")
+    template_file_path = os.path.join(current_dir, f"{LanguageConfig.get_current()}/summarize_doc.md")
 
     def __init__(self, doc: Report):
         super().__init__(placeholder_targets={"[DOC]": doc})
 
 class PlanPrompt(Prompt):
-    template_file_path = os.path.join(current_dir, "plan.md")
+    template_file_path = os.path.join(current_dir, f"{LanguageConfig.get_current()}/plan.md")
 
     def __init__(self, doc: Report,
                  valid_actions: Collection[type[Action]],
@@ -158,9 +192,9 @@ class PoseQuestionsPrompt(Prompt):
             "[N_QUESTIONS]": n_questions
         }
         if interpret:
-            self.template_file_path = os.path.join(current_dir, "pose_questions.md")
+            self.template_file_path = os.path.join(current_dir, f"{LanguageConfig.get_current()}/pose_questions.md")
         else:
-            self.template_file_path = os.path.join(current_dir, "pose_questions_no_interpretation.md")
+            self.template_file_path = os.path.join(current_dir, f"{LanguageConfig.get_current()}/pose_questions_no_interpretation.md")
         super().__init__(placeholder_targets=placeholder_targets)
 
     def extract(self, response: str) -> dict:
@@ -173,7 +207,7 @@ class PoseQuestionsPrompt(Prompt):
 
 class ProposeQueries(Prompt):
     """Used to generate queries to answer AVeriTeC questions."""
-    template_file_path = os.path.join(current_dir, "propose_queries.md")
+    template_file_path = os.path.join(current_dir, f"{LanguageConfig.get_current()}/propose_queries.md")
 
     def __init__(self, question: str, doc: Report):
         placeholder_targets = {
@@ -192,7 +226,7 @@ class ProposeQueries(Prompt):
 
 class ProposeQuerySimple(Prompt):
     """Used to generate queries to answer AVeriTeC questions."""
-    template_file_path = os.path.join(current_dir, "propose_query_simple.md")
+    template_file_path = os.path.join(current_dir, f"{LanguageConfig.get_current()}/propose_query_simple.md")
 
     def __init__(self, question: str):
         placeholder_targets = {
@@ -210,7 +244,7 @@ class ProposeQuerySimple(Prompt):
 
 class ProposeQueriesNoQuestions(Prompt):
     """Used to generate queries to answer AVeriTeC questions."""
-    template_file_path = os.path.join(current_dir, "propose_queries_no_questions.md")
+    template_file_path = os.path.join(current_dir, f"{LanguageConfig.get_current()}/propose_queries_no_questions.md")
 
     def __init__(self, doc: Report):
         placeholder_targets = {
@@ -228,7 +262,7 @@ class ProposeQueriesNoQuestions(Prompt):
 
 class AnswerCollectively(Prompt):
     """Used to generate answers to the AVeriTeC questions."""
-    template_file_path = os.path.join(current_dir, "answer_question_collectively.md")
+    template_file_path = os.path.join(current_dir, f"{LanguageConfig.get_current()}/answer_question_collectively.md")
 
     def __init__(self, question: str, results: list[Source], doc: Report):
         result_strings = [f"## Result `{i}`\n{str(result)}" for i, result in enumerate(results)]
@@ -265,7 +299,7 @@ class AnswerCollectively(Prompt):
 
 class AnswerQuestion(Prompt):
     """Used to generate answers to the AVeriTeC questions."""
-    template_file_path = os.path.join(current_dir, "answer_question.md")
+    template_file_path = os.path.join(current_dir, f"{LanguageConfig.get_current()}/answer_question.md")
 
     def __init__(self, question: str, result: Source, doc: Report):
         placeholder_targets = {
@@ -292,7 +326,7 @@ class AnswerQuestion(Prompt):
 
 class AnswerQuestionWithReasoning(Prompt):
     """Used to generate answers to the AVeriTeC questions."""
-    template_file_path = os.path.join(current_dir, "claim_reasoning.md")
+    template_file_path = os.path.join(current_dir, f"{LanguageConfig.get_current()}/claim_reasoning.md")
 
     def __init__(self, doc: Report):
         full_str = str(doc)
@@ -309,7 +343,7 @@ class AnswerQuestionWithReasoning(Prompt):
 
 class AnswerQuestionWithSentiment(Prompt):
     """Used to generate answers to the AVeriTeC questions."""
-    template_file_path = os.path.join(current_dir, "claim_sentiment.md")
+    template_file_path = os.path.join(current_dir, f"{LanguageConfig.get_current()}/claim_sentiment.md")
 
     def __init__(self, doc: Report):
         full_str = str(doc)
@@ -327,7 +361,7 @@ class AnswerQuestionWithSentiment(Prompt):
 
 class AnswerQuestionNoEvidence(Prompt):
     """Used to generate answers to the AVeriTeC questions."""
-    template_file_path = os.path.join(current_dir, "answer_question_no_evidence.md")
+    template_file_path = os.path.join(current_dir, f"{LanguageConfig.get_current()}/answer_question_no_evidence.md")
 
     def __init__(self, question: str, doc: Report):
         placeholder_targets = {
@@ -338,7 +372,7 @@ class AnswerQuestionNoEvidence(Prompt):
 
 
 class DevelopPrompt(Prompt):
-    template_file_path = os.path.join(current_dir, "develop.md")
+    template_file_path = os.path.join(current_dir, f"{LanguageConfig.get_current()}/develop.md")
 
     def __init__(self, doc: Report):
         placeholder_targets = {"[DOC]": doc}
@@ -346,7 +380,7 @@ class DevelopPrompt(Prompt):
 
 
 class InterpretPrompt(Prompt):
-    template_file_path = os.path.join(current_dir, "interpret.md")
+    template_file_path = os.path.join(current_dir, f"{LanguageConfig.get_current()}/interpret.md")
 
     def __init__(self, content: Content, guidelines: str = None):
         placeholder_targets = {
@@ -368,7 +402,7 @@ class InterpretPrompt(Prompt):
 
 
 class DecomposePrompt(Prompt):
-    template_file_path = os.path.join(current_dir, "decompose.md")
+    template_file_path = os.path.join(current_dir, f"{LanguageConfig.get_current()}/decompose.md")
 
     def __init__(self, content: Content):
         self.content = content
@@ -385,7 +419,7 @@ class DecomposePrompt(Prompt):
 
 
 class JudgeNaively(Prompt):
-    template_file_path = os.path.join(current_dir, "judge_naive.md")
+    template_file_path = os.path.join(current_dir, f"{LanguageConfig.get_current()}/judge_naive.md")
 
     def __init__(self, claim: Claim,
                  classes: Collection[Label],
@@ -406,7 +440,7 @@ class JudgeNaively(Prompt):
         return dict(verdict=verdict, response=response)
 
 class InitializePrompt(Prompt):
-    template_file_path = os.path.join(current_dir, "initialize.md")
+    template_file_path = os.path.join(current_dir, f"{LanguageConfig.get_current()}/initialize.md")
 
     def __init__(self, claim: Claim):
         placeholder_targets = {
@@ -424,7 +458,7 @@ def load_exemplars(valid_actions: Collection[type[Action]]) -> str:
             exemplar_paths.append(exemplar_path)
 
     if len(exemplar_paths) == 0:
-        return read_md_file(exemplars_dir / "default.md")
+        return read_md_file(exemplars_dir / f"{LanguageConfig.get_current()}/default.md")
     else:
         return "\n\n".join([read_md_file(path) for path in exemplar_paths])
 

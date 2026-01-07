@@ -16,7 +16,41 @@ from agent.evidence_retrieval.tools.tool import Tool
 from agent.prompts.prompts import SummarizeSourcePrompt
 from agent.utils.console import gray
 
+class LanguageConfig:
+    _current = None 
+    
+    @classmethod
+    def _get_language_from_env(cls):
 
+        language = os.environ.get("LANGUAGE", "en").lower()
+        if language in ["zh", "zh-cn", "zh_tw", "cn", "chinese"]:
+            return "zh"
+        elif language in ["en", "english"]:
+            return "en"
+        else:
+            print(f"Warning: Unsupported language '{language}', using 'en'")
+            return "en"
+    
+    @classmethod
+    def get_current(cls):
+
+        if cls._current is None:
+            cls._current = cls._get_language_from_env()
+        return cls._current
+    
+    @classmethod
+    def set_language(cls, language: str):
+
+        language = language.lower().strip()
+        if language in ["zh", "zh-cn", "zh_tw", "cn", "chinese"]:
+            cls._current = "zh"
+        elif language in ["en", "english"]:
+            cls._current = "en"
+        else:
+            print(f"Warning: Unsupported language '{language}', using 'en'")
+            cls._current = "en"
+        print(f"Language set to: {cls._current}")
+    
 class Search(Action):
     """Runs a search on the specified platform to retrieve helpful sources. Useful
     to find new knowledge. Some platforms also support images, e.g.,
@@ -312,7 +346,7 @@ class Searcher(Tool):
         }
         summarize_prompt = Prompt(placeholder_targets=placeholder_targets,
                                   name="SummarizeSummariesPrompt",
-                                  template_file_path=os.path.join(current_dir, "summarize_summaries.md"))
+                                  template_file_path=os.path.join(current_dir, f"{LanguageConfig.get_current()}/summarize_summaries.md"))
 
         return MultimodalSequence(self.llm.generate(summarize_prompt))
 

@@ -25,12 +25,12 @@
 
 <details>
 <summary><b>Previous Releases</b></summary>
-[2025.10.17] We have publicly released the RealTimeNews-2025 Dataset. Researchers can now download and use it by completing [this form](https://forms.office.com/r/mJRTtJR2Qf).
+[2025.10.17] We have publicly released the EmergingNews-25 Dataset. Researchers can now download and use it by completing [this form](https://forms.office.com/r/mJRTtJR2Qf).
 </details>
 
 ## 📊 Dataset Download
 
-This dataset can be accessed by completing the [Application to Use the RealTimeNews-2025 from EASE for Real-Time Fake News Detection](https://forms.office.com/r/mJRTtJR2Qf). Upon approval, it will be available for download and use.
+This dataset can be accessed by completing the [Application to Use the EmergingNews-25 from EASE for Emerging Fake News Detection](https://forms.office.com/r/mJRTtJR2Qf). Upon approval, it will be available for download and use.
 
 ### Dataset Examples
 
