@@ -1,6 +1,8 @@
 import os
 from datetime import datetime
 
+_EXPERT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # Expert/
+
 
 class setting_config:
     """
@@ -45,7 +47,7 @@ class setting_config:
     reasoning_expert = True
     evidence_expert = True
     expert_type = 'sentiment'  # or 'reasoning', 'evidence'
-    bert_path = './bert/chinese-bert-wwm-ext'
+    bert_path = os.path.join(_EXPERT_DIR, 'bert', 'chinese-bert-wwm-ext')
     parameter_pkl_name = 'model.pkl'
     eval_mode = False
 

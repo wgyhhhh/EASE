@@ -2,6 +2,7 @@ import copy
 import re
 from abc import ABC
 from datetime import datetime
+from pathlib import Path
 from typing import Callable
 
 import numpy as np
@@ -36,7 +37,10 @@ We use a specific media reference notation format. Images are referred to as
 Each medium reference is then followed by the corresponding base64 data. Use the reference notation if you want to
 refer to any media in your response."""
 
-AVAILABLE_MODELS = pd.read_csv("./config/available_models.csv", skipinitialspace=True)
+AVAILABLE_MODELS = pd.read_csv(
+    Path(__file__).resolve().parent.parent.parent / "config" / "available_models.csv",
+    skipinitialspace=True
+)
 
 
 def model_specifier_to_shorthand(specifier: str) -> str:
@@ -80,9 +84,9 @@ def get_model_api_pricing(name: str) -> tuple[float, float]:
 
 
 class OpenAIAPI:
-    def __init__(self, model: str, base_url: str = "https://xiaoai.plus/v1"):
+    def __init__(self, model: str, base_url: str = "https://api.openai.com/v1"):
         self.model = model
-        self.base_url = base_url  # 使用默认的 OpenAI API URL，或者传入自定义的 base_url
+        self.base_url = base_url  # Use the default OpenAI API URL, or pass in a custom base_url.
         if not api_keys["openai_api_key"]:
             raise ValueError("No OpenAI API key provided. Add it to config/api_keys.yaml")
         self.client = OpenAI(api_key=api_keys["openai_api_key"], base_url=self.base_url)
@@ -114,48 +118,28 @@ class DeepSeekAPI:
         self.model = model
         if not api_keys["deepseek_api_key"]:
             raise ValueError("No DeepSeek API key provided. Add it to config/api_keys.yaml")
-        self.key = api_keys["deepseek_api_key"]
+        self.client = OpenAI(
+            api_key=api_keys["deepseek_api_key"],
+            base_url="https://api.deepseek.com/v1",
+        )
 
     def __call__(self, prompt: Prompt, system_prompt: str, **kwargs):
         if prompt.has_videos():
             raise ValueError(f"{self.model} does not support videos.")
-
         if prompt.has_audios():
             raise ValueError(f"{self.model} does not support audios.")
 
-        return self.completion(prompt, system_prompt, **kwargs)
-
-    def completion(self, prompt: Prompt, system_prompt: str, **kwargs):
-        url = "https://api.deepseek.com/chat/completions"
         messages = []
         if system_prompt:
-            messages.append(dict(
-                content=system_prompt,
-                role="system",
-            ))
-        for block in prompt.to_list():
-            if isinstance(block, str):
-                message = dict(
-                    content=block,
-                    role="user",
-                )
-            else:
-                messages = ...
-                raise NotImplementedError
-            messages.append(message)
-        headers = {"Authorization": f"Bearer {self.key}", "Content-Type": "application/json"}
-        body = dict(
+            messages.append({"role": "system", "content": system_prompt})
+        messages.append({"role": "user", "content": str(prompt)})
+
+        completion = self.client.chat.completions.create(
             model=self.model,
             messages=messages,
             **kwargs,
         )
-        response = requests.post(url, body, headers=headers)
-
-        if response.status_code != 200:
-            raise RuntimeError("Requesting the DeepSeek API failed: " + response.text)
-
-        completion = response.json()["object"]
-        return completion
+        return completion.choices[0].message.content
 
 
 class Model(ABC):
@@ -359,9 +343,11 @@ class GPTModel(Model):
 
 
 class DeepSeekModel(Model):
-    open_source = True
+    open_source = False
     encoding = tiktoken.get_encoding("cl100k_base")
-    accepts_images = True
+    accepts_images = False
+    accepts_videos = False
+    accepts_audio = False
 
     def load(self, model_name: str) -> Pipeline | DeepSeekAPI:
         return DeepSeekAPI(model=model_name)
@@ -379,6 +365,9 @@ class DeepSeekModel(Model):
             logger.warning("Error while calling the LLM! Continuing with empty response.\n" + str(e))
             logger.warning("Prompt used:\n" + str(prompt))
         return ""
+
+    def count_tokens(self, prompt: Prompt | str) -> int:
+        return len(self.encoding.encode(str(prompt)))
 
 
 def make_model(name: str, **kwargs) -> Model:

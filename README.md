@@ -19,6 +19,8 @@
 
 ## 📰 News
 
+[2026.3.23] We have further improved the Agent and added support for the Deepseek series of models.
+
 [2025.12.27] We have fully open-sourced the agent code in step 1.
 
 [2025.12.22] We have fully open-sourced the expert architecture and training code in step 3.
@@ -72,7 +74,7 @@ After downloading the pretrained models from their links ([bert-base-uncased](ht
 
 3. **Agent**
  ###### Prepare API
-Please first register API keys on [OpenAI API](https://openai.com/index/openai-api/) and [Serper API](https://serper.dev/?utm_term=serpapi&gad_source=1&gclid=Cj0KCQiAo5u6BhDJARIsAAVoDWspQtWo419c8unYBBlVWOKTGUyJhoh2ZBQuWdRR2hDZf8gpIS3h7UEaAksZEALw_wcB), and fill them in the `./Agent/config/api_keys.yaml` file. Currently, the author's Agent only integrates OpenAI's GPT series models. Support for other models will be provided in future updates, and we encourage everyone to submit `Pull Requests`.
+Please first register API keys on [OpenAI API](https://openai.com/index/openai-api/) and [Serper API](https://serper.dev/?utm_term=serpapi&gad_source=1&gclid=Cj0KCQiAo5u6BhDJARIsAAVoDWspQtWo419c8unYBBlVWOKTGUyJhoh2ZBQuWdRR2hDZf8gpIS3h7UEaAksZEALw_wcB), and fill them in the `./Agent/config/api_keys.yaml` file. Currently, the Agent only integrates OpenAI's GPT series and DeepSeek's series models. Support for other models will be provided in future updates, and we encourage everyone to submit `Pull Requests`.
 
 ###### Prepare Dataset
 
@@ -102,6 +104,14 @@ conda create --name Agent python=3.10
 conda activate Agent
 pip install -r requirements.txt
 ```
+
+If you need to use `🔥Firecrawl`, please run the following command; otherwise, the agent will use the alternative `BeautifulSoup`.
+
+```
+docker run -d -p 3002:3002 tudamailab/firecrawl
+```
+
+Currently, the agent supports two languages for data processing. You can switch the language by modifying the second line in `run.py` to `os.environ["LANGUAGE"] = "zh"` (where `zh` is for Chinese and `en` is for English).
 
 ```
 python run.py

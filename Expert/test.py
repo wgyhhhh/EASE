@@ -7,6 +7,9 @@ from engine import *
 import os
 import sys
 import numpy
+
+_EXPERT_DIR = os.path.dirname(os.path.abspath(__file__))  # Expert/
+
 from utils import *
 from configs.config_setting import setting_config
 import tempfile
@@ -25,14 +28,14 @@ def main():
     config.gpu_id = args.gpu_id
     config.bert_path = args.bert_path
     config.datasets = args.datasets
-    config.work_dir = f'./results/'
+    config.work_dir = os.path.join(_EXPERT_DIR, 'results') + os.sep
 
     if config.datasets == 'weibo':
-        config.data_path = './data/weibo'
+        config.data_path = os.path.join(_EXPERT_DIR, 'data', 'weibo')
     elif config.datasets == 'weibo21':
-        config.data_path = './data/weibo21/'
+        config.data_path = os.path.join(_EXPERT_DIR, 'data', 'weibo21')
     elif config.datasets == 'gossipcop':
-        config.data_path = './data/gossipcop/'
+        config.data_path = os.path.join(_EXPERT_DIR, 'data', 'gossipcop')
     
 
     print('#----------GPU init----------#')
@@ -188,7 +191,7 @@ def parse_args():
     parser.add_argument('--seed', type=int, default=3759, help='random seed')
     parser.add_argument('--gpu_id', type=str, default='0', help='GPU ID')
     parser.add_argument('--bert_path', type=str,
-                        default='./bert/chinese-bert-wwm-ext',
+                        default=os.path.join(_EXPERT_DIR, 'bert', 'chinese-bert-wwm-ext'),
                         help='BERT model path')
     parser.add_argument('--datasets', type=str, default='weibo21', help='dataset name')
     return parser.parse_args()

@@ -6,3 +6,5 @@ gpt_4,OPENAI,gpt-4, 8_192,30.0,60.0
 gpt_4_32k,OPENAI,gpt-4-32k, 32_768,60.0,120.0
 gpt_35_turbo,OPENAI,gpt-3.5-turbo-0125, 16_385,0.5,1.5
 gpt_35_turbo_16k,OPENAI,gpt-3.5-turbo-16k-0613, 16_385,3.0,4.0
+deepseek_chat,deepseek,deepseek-chat, 64_000,0.27,1.10
+deepseek_reasoner,deepseek,deepseek-reasoner, 64_000,0.55,2.19

@@ -3,20 +3,23 @@
 import yaml
 from pathlib import Path
 
-# Directories
-working_dir = Path.cwd() # working_dir should be DEFAME
-data_root_dir = Path("data/")  # Where the datasets are stored
-result_base_dir = working_dir / "out/"  # Where outputs are to be saved
-temp_dir = result_base_dir / "temp/" # Where caches etc. are saved
+# Directories resolved relative to this file's location (Agent/config/globals.py)
+_CONFIG_DIR = Path(__file__).resolve().parent   # Agent/config/
+_AGENT_DIR = _CONFIG_DIR.parent                 # Agent/
+
+working_dir = _AGENT_DIR
+data_root_dir = _AGENT_DIR / "data"            # Where the datasets are stored
+result_base_dir = _AGENT_DIR / "out"           # Where outputs are to be saved
+temp_dir = result_base_dir / "temp"            # Where caches etc. are saved
 
 embedding_model = "Alibaba-NLP/gte-base-en-v1.5"  # used for semantic search in FEVER and Averitec knowledge bases
-manipulation_detection_model = working_dir / "third_party/TruFor/weights/trufor.pth.tar" 
+manipulation_detection_model = _AGENT_DIR / "third_party/TruFor/weights/trufor.pth.tar"
 
-api_key_path = Path("api_keys.yaml")
+api_key_path = _CONFIG_DIR / "api_keys.yaml"
 api_keys = yaml.safe_load(open(api_key_path))
 
 random_seed = 42 # used for sub-sampling in partial dataset testing
-google_service_account_key_path = Path("./config/google_service_account_key.json")
+google_service_account_key_path = _CONFIG_DIR / "google_service_account_key.json"
 firecrawl_url = "http://firecrawl:3002"  # applies to Firecrawl running in a 'firecrawl' Docker Container
 
 def keys_configured() -> bool:

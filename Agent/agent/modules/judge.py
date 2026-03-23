@@ -42,7 +42,7 @@ class Judge:
         return self._generate_verdict(prompt)
 
     def judge_reasoning(self, doc: Report) -> Label:
-        classes = self.classes.copy()
+        classes = self.classes - {Label.NEI}
 
         prompt = JudgeReasonPrompt(doc, classes, self.class_definitions, self.extra_rules)
         

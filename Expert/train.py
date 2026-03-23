@@ -7,6 +7,8 @@ from engine import *
 import os
 import sys
 
+_EXPERT_DIR = os.path.dirname(os.path.abspath(__file__))  # Expert/
+
 from utils import *
 from configs.config_setting import setting_config
 
@@ -30,14 +32,14 @@ def main():
     config.datasets = args.datasets
     config.analyzer_parameter = args.analyzer_parameter
     config.lr = args.lr
-    config.work_dir = f'./results/EASE_{config.expert_type}_{config.datasets}/'
+    config.work_dir = os.path.join(_EXPERT_DIR, 'results', f'EASE_{config.expert_type}_{config.datasets}') + os.sep
 
     if config.datasets == 'weibo':
-        config.data_path = './data/weibo'
+        config.data_path = os.path.join(_EXPERT_DIR, 'data', 'weibo')
     elif config.datasets == 'weibo21':
-        config.data_path = './data/weibo21/'
+        config.data_path = os.path.join(_EXPERT_DIR, 'data', 'weibo21')
     elif config.datasets == 'gossipcop':
-        config.data_path = './data/gossipcop/'
+        config.data_path = os.path.join(_EXPERT_DIR, 'data', 'gossipcop')
     print('#----------Creating logger----------#')
     sys.path.append(config.work_dir + '/')
     log_dir = os.path.join(config.work_dir, 'log')
@@ -182,7 +184,7 @@ def parse_args():
     parser.add_argument('--gpu_id', type=str, default='0', help='GPU ID')
     parser.add_argument('--early_stop', type=int, default=10, help='early stop patience')
     parser.add_argument('--bert_path', type=str,
-                        default='./bert/chinese-bert-wwm-ext',
+                        default=os.path.join(_EXPERT_DIR, 'bert', 'chinese-bert-wwm-ext'),
                         help='BERT model path')
     parser.add_argument('--expert_type', type=str, default='sentiment', help='expert type')
     parser.add_argument('--datasets', type=str, default='weibo', help='dataset name')
