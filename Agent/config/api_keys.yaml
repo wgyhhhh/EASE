@@ -2,6 +2,8 @@ huggingface_user_access_token: ''
 
 openai_api_key: ''
 
+openai_base_url: ''
+
 deepseek_api_key: ''
 
 serper_api_key: ''  

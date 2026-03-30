@@ -84,9 +84,10 @@ def get_model_api_pricing(name: str) -> tuple[float, float]:
 
 
 class OpenAIAPI:
-    def __init__(self, model: str, base_url: str = "https://api.openai.com/v1"):
+    def __init__(self, model: str, base_url: str | None = None):
         self.model = model
-        self.base_url = base_url  # Use the default OpenAI API URL, or pass in a custom base_url.
+        configured_base_url = (api_keys.get("openai_base_url") or "").strip()
+        self.base_url = base_url or configured_base_url or "https://api.openai.com/v1"
         if not api_keys["openai_api_key"]:
             raise ValueError("No OpenAI API key provided. Add it to config/api_keys.yaml")
         self.client = OpenAI(api_key=api_keys["openai_api_key"], base_url=self.base_url)

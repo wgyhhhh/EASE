@@ -1,7 +1,10 @@
 """Shared configuration across all project code."""
 
-import yaml
+import os
+import sys
 from pathlib import Path
+
+import yaml
 
 # Directories resolved relative to this file's location (Agent/config/globals.py)
 _CONFIG_DIR = Path(__file__).resolve().parent   # Agent/config/
@@ -16,7 +19,18 @@ embedding_model = "Alibaba-NLP/gte-base-en-v1.5"  # used for semantic search in 
 manipulation_detection_model = _AGENT_DIR / "third_party/TruFor/weights/trufor.pth.tar"
 
 api_key_path = _CONFIG_DIR / "api_keys.yaml"
-api_keys = yaml.safe_load(open(api_key_path))
+api_keys = {}
+
+
+def reload_api_keys() -> dict:
+    """Reload API keys from disk while keeping the shared dict object stable."""
+    loaded = yaml.safe_load(open(api_key_path)) or {}
+    api_keys.clear()
+    api_keys.update(loaded)
+    return api_keys
+
+
+reload_api_keys()
 
 random_seed = 42 # used for sub-sampling in partial dataset testing
 google_service_account_key_path = _CONFIG_DIR / "google_service_account_key.json"
@@ -60,5 +74,5 @@ def input_multiline(prompt: str):
     return contents
 
 
-if not keys_configured():
+if not keys_configured() and sys.stdin.isatty() and os.environ.get("EASE_DISABLE_KEY_PROMPT") != "1":
     configure_keys()
