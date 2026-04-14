@@ -15,7 +15,7 @@
 
 **<font color='red'>We will publicly release all implementation details, including code, datasets, and infrastructure, to enable result verification and contribute to the research community.</font>**
 
-> If you have any questions, please new an issue or contact `wgy3129@stu.ouc.edu.cn`.
+> If you have any questions, please new an issue or contact `gywei@stu.ouc.edu.cn`.
 
 ## 📰 News
 
